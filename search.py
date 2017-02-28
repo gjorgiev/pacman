@@ -90,14 +90,14 @@ def depthFirstSearch(problem):
     while not stack.isEmpty():
         state, path = stack.pop()
         visited.add(state)
-        for state, direction, cost in problem.getSuccessors(state):
+        for successor in problem.getSuccessors(state):
+            state, direction = successor[0], successor[1]
             if problem.isGoalState(state):
                 return path + [direction]
             if state not in visited:
                 visited.add(state)
                 stack.push((state, path + [direction]))
-
-    return []
+    return None
 
 
 def breadthFirstSearch(problem):
@@ -109,16 +109,17 @@ def breadthFirstSearch(problem):
     queue = util.Queue()
     queue.push((problem.getStartState(), []))
     while not queue.isEmpty():
-        state, path = queue.pop()
-        visited.add(state)
-        for state, direction, cost in problem.getSuccessors(state):
-            if problem.isGoalState(state):
-                return path + [direction]
+        currentState, currentPath = queue.pop()
+        visited.add(currentState)
+        if problem.isGoalState(currentState):
+            return currentPath
+
+        for successor in problem.getSuccessors(currentState):
+            state, direction = successor[0], successor[1]
             if state not in visited:
                 visited.add(state)
-                queue.push((state, path + [direction]))
-
-    return []
+                queue.push((state, currentPath + [direction]))
+    return None
 
 
 def uniformCostSearch(problem):

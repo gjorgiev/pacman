@@ -191,9 +191,9 @@ class PositionSearchProblem(search.SearchProblem):
         nextState = (nextx, nexty)
         cost = self.costFn(nextState)
         successors.append( ( nextState, action, cost) )
-        
+
     # Bookkeeping for display purposes
-    self._expanded += 1 
+    self._expanded += 1
     if state not in self._visited:
       self._visited[state] = True
       self._visitedlist.append(state)
@@ -275,19 +275,21 @@ class CornersProblem(search.SearchProblem):
       if not startingGameState.hasFood(*corner):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
-    
     "*** YOUR CODE HERE ***"
-    
+    self.reachedCorners = {}
+
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-    
+    return self.startingPosition
+
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-       
+    if state in self.corners:
+        self.reachedCorners[state] = True
+    return len(self.reachedCorners) == len(self.corners)
+
   def getSuccessors(self, state):
     """
     Returns successor states, the actions they require, and a cost of 1.
@@ -310,8 +312,15 @@ class CornersProblem(search.SearchProblem):
       #   hitsWall = self.walls[nextx][nexty]
       
       "*** YOUR CODE HERE ***"
-      
+      x, y = state
+      dx, dy = Actions.directionToVector(action)
+      nextx, nexty = int(x + dx), int(y + dy)
+      if not self.walls[nextx][nexty]:
+        nextState = (nextx, nexty)
+        successors.append((nextState, action))
+
     self._expanded += 1
+
     return successors
 
   def getCostOfActions(self, actions):
