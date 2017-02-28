@@ -92,13 +92,12 @@ def depthFirstSearch(problem):
   while not stack.isEmpty():
       state, path = stack.pop()
       visited.add(state)
-
       for state, direction, cost in problem.getSuccessors(state):
+          if problem.isGoalState(state):
+              return path + [direction]
           if state not in visited:
-              if problem.isGoalState(state):
-                  return path + [direction]
-              else:
-                  stack.push((state, path + [direction]))
+              visited.add(state)
+              stack.push((state, path + [direction]))
 
   return []
 
@@ -115,18 +114,34 @@ def breadthFirstSearch(problem):
       state, path = queue.pop()
       visited.add(state)
       for state, direction, cost in problem.getSuccessors(state):
+          if problem.isGoalState(state):
+              return path + [direction]
           if state not in visited:
-              if problem.isGoalState(state):
-                  return path + [direction]
-              else:
-                  queue.push((state, path + [direction]))
+              visited.add(state)
+              queue.push((state, path + [direction]))
 
   return []
 
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  visited = set()
+  heap = util.PriorityQueue()
+  heap.push((problem.getStartState(), [], 0), 0)
+  minCost, minCostPath = float("inf"), []
+  while not heap.isEmpty():
+      (prevState, path, prevCost) = heap.pop()
+      visited.add(prevState)
+      for state, direction, cost in problem.getSuccessors(prevState):
+          if state not in visited:
+              if problem.isGoalState(state):
+                  if prevCost + cost < minCost:
+                      minCost = prevCost + cost
+                      minCostPath = path + [direction]
+              else:
+                  visited.add(state)
+                  heap.push((state, path + [direction], prevCost + cost), prevCost + cost)
+  return minCostPath
 
 def nullHeuristic(state, problem=None):
   """
