@@ -108,18 +108,19 @@ def breadthFirstSearch(problem):
     Search the shallowest nodes in the search tree firs.
     [2nd Edition: p 73, 3rd Edition: p 82]
     """
-    explored = [problem.getStartState()]
+    explored = set()
     queue = util.Queue()
     queue.push((problem.getStartState(), []))
     while not queue.isEmpty():
         currentState, currentPath = queue.pop()
+        explored.add(currentState)
         if problem.isGoalState(currentState):
             return currentPath
 
         for successor in problem.getSuccessors(currentState):
             state, direction = successor[0], successor[1]
             if state not in explored:
-                explored.append(state)
+                explored.add(state)
                 queue.push((state, currentPath + [direction]))
     return None
 
