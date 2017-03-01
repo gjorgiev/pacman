@@ -275,20 +275,18 @@ class CornersProblem(search.SearchProblem):
       if not startingGameState.hasFood(*corner):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
-    "*** YOUR CODE HERE ***"
-    self.reachedCorners = {}
 
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"
-    return self.startingPosition
+    return (self.startingPosition, [])
 
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
-    if state in self.corners:
-        self.reachedCorners[state] = True
-    return len(self.reachedCorners) == len(self.corners)
+    coord = state[0]
+    visitedCorners = state[1]
+    return len(visitedCorners) == len(self.corners)
 
   def getSuccessors(self, state):
     """
@@ -312,11 +310,16 @@ class CornersProblem(search.SearchProblem):
       #   hitsWall = self.walls[nextx][nexty]
       
       "*** YOUR CODE HERE ***"
-      x, y = state
+      x, y = state[0]
+      visitedCorners = state[1]
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
-      if not self.walls[nextx][nexty]:
-        nextState = (nextx, nexty)
+      hitsWall = self.walls[nextx][nexty]
+      if not hitsWall:
+        successorVisitedCorners = list(visitedCorners)
+        if (nextx, nexty) in self.corners and (nextx, nexty) not in visitedCorners:
+          successorVisitedCorners.append((nextx, nexty))
+        nextState = (nextx, nexty), successorVisitedCorners
         successors.append((nextState, action))
 
     self._expanded += 1

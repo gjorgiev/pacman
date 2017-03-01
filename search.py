@@ -13,6 +13,7 @@ by Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -87,29 +88,9 @@ def depthFirstSearch(problem):
     visited = set()
     stack = util.Stack()
     stack.push((problem.getStartState(), []))
+
     while not stack.isEmpty():
-        state, path = stack.pop()
-        visited.add(state)
-        for successor in problem.getSuccessors(state):
-            state, direction = successor[0], successor[1]
-            if problem.isGoalState(state):
-                return path + [direction]
-            if state not in visited:
-                visited.add(state)
-                stack.push((state, path + [direction]))
-    return None
-
-
-def breadthFirstSearch(problem):
-    """
-    Search the shallowest nodes in the search tree firs.
-    [2nd Edition: p 73, 3rd Edition: p 82]
-    """
-    visited = set()
-    queue = util.Queue()
-    queue.push((problem.getStartState(), []))
-    while not queue.isEmpty():
-        currentState, currentPath = queue.pop()
+        currentState, currentPath = stack.pop()
         visited.add(currentState)
         if problem.isGoalState(currentState):
             return currentPath
@@ -118,6 +99,27 @@ def breadthFirstSearch(problem):
             state, direction = successor[0], successor[1]
             if state not in visited:
                 visited.add(state)
+                stack.push((state, currentPath + [direction]))
+    return None
+
+
+def breadthFirstSearch(problem):
+    """
+    Search the shallowest nodes in the search tree firs.
+    [2nd Edition: p 73, 3rd Edition: p 82]
+    """
+    explored = [problem.getStartState()]
+    queue = util.Queue()
+    queue.push((problem.getStartState(), []))
+    while not queue.isEmpty():
+        currentState, currentPath = queue.pop()
+        if problem.isGoalState(currentState):
+            return currentPath
+
+        for successor in problem.getSuccessors(currentState):
+            state, direction = successor[0], successor[1]
+            if state not in explored:
+                explored.append(state)
                 queue.push((state, currentPath + [direction]))
     return None
 
@@ -166,6 +168,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 heap.push((state, currentPath + [direction], currentCost + cost), currentCost + cost + heuristicCost)
 
     return None
+
 
 # Abbreviations
 bfs = breadthFirstSearch
