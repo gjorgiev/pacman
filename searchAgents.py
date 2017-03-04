@@ -455,7 +455,6 @@ def foodHeuristic(state, problem):
       problem.heuristicInfo['wallCount'] = problem.walls.count()
     Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
     """
-
     position, foodGrid = state
     heuristicCnt = 0
     i=j=0;
@@ -472,6 +471,7 @@ class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
 
     def registerInitialState(self, state):
+        self.searchFunction = search.bfs
         self.actions = []
         currentState = state
         while (currentState.getFood().count() > 0):
@@ -486,18 +486,6 @@ class ClosestDotSearchAgent(SearchAgent):
         self.actionIndex = 0
         print 'Path found with cost %d.' % len(self.actions)
 
-    def getSuccessors(self, position, walls):
-        "Returns successor states, the actions they require, and a cost of 1."
-        successors = []
-        self._expanded += 1
-        for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x, y = position
-            dx, dy = Actions.directionToVector(direction)
-            nextx, nexty = int(x + dx), int(y + dy)
-            if not walls[nextx][nexty]:
-                successors.append(tuple(nextx, nexty), direction)
-        return successors
-
     def findPathToClosestDot(self, gameState):
         "Returns a path (a list of actions) to the closest dot, starting from gameState"
         # Here are some useful elements of the startState
@@ -505,22 +493,7 @@ class ClosestDotSearchAgent(SearchAgent):
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
-
-        #Breadth-first search to find closest dot
-        closestPath = []
-        queue = util.Queue()
-        queue.push((startPosition, []))
-        explored = {}
-        while not queue.isEmpty():
-            position, path = queue.pop()
-            if food[position[0]][position[1]]:
-                return path;
-            explored[position] = True
-            for nextPosition, nextDirection, cost in problem.getSuccessors(position):
-                if not explored.get(nextPosition):
-                    queue.push((nextPosition, path + [nextDirection]))
-        return closestPath
-
+        return self.searchFunction(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -554,9 +527,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         that will complete the problem definition.
         """
         x, y = state
+        return self.food[x][y]
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
 
 ##################
