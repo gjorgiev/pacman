@@ -457,13 +457,10 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     heuristicCnt = 0
-    i=j=0;
-    for row in foodGrid:
-        for element in row:
-            if element:
-                heuristicCnt += (abs(position[0] - i) + abs(position[1] - j))
-            j+=1
-        i+=1
+    for x, row in enumerate(foodGrid):
+        for y, cell in enumerate(row):
+            if cell:
+                heuristicCnt += (abs(position[0] - x) + abs(position[1] - y))
     return heuristicCnt
 
 
